@@ -3,11 +3,13 @@ package com.shuhui;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class JsonApplicationTests {
+//@SpringBootTest
+public class JsonApplicationTests {
 
     @Test
-    void contextLoads() {
+    public void testJson() {
+        System.out.println("testJosn.............................");
+        System.out.println("分支操作...............................");
     }
 
 }
