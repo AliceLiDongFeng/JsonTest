@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试JSON数据前后端传输</title>
+<!--    引入jquery依赖-->
+    <script src="js/jquery-3.6.0.min.js"></script>
+  <style type="text/css">
+    div{
+      width: 360px;
+      height: 270px;
+      margin: 150px auto;
+      border: 1px solid cornsilk;
+      box-shadow: 10px 10px 5px #888888;
+      text-align: center;
+    }
+  </style>
+  <script type="text/javascript">
+    $(function(){
+
+      let DataDeal = {
+      //将从form中通过$('#form').serialize()获取的值转成json
+        formToJson: function (data) {
+          data=data.replace(/&/g,"\",\"");
+          data=data.replace(/=/g,"\":\"");
+          data="{\""+data+"\"}";
+          return data;
+        }
+      };
+      $("input[type=submit]").on("click",function(){
+        let data = $("form").serialize();
+        data= decodeURIComponent(data)   //防止中文乱码
+        alert(data);
+        $.ajax({
+          contentType:'application/json;charset=utf-8',
+          type:"post",
+          url:"/jsonOne",
+          data: DataDeal.formToJson(data),
+          dataType:"json",
+          //async:false,    // 表示请求同步
+          success: function(message){
+            alert(message.username);
+            // 重新刷新页面
+            location.reload();
+          },
+          error: function(){
+            alert("请求失败!");
+            // 重新刷新页面
+            location.reload();
+          }
+        });
+        return false;
+      });
+
+      let temp = {'username':'李东峰', 'password':'123456','gender':'男'};
+      let jsonData = '{"username":"李东峰","password":"123456","gender":"男"}';    // 这是json格式字符串
+      let jsonData1 = {"username":"程志杰","password":123456, "age":20, "gender":"nv"};    // 这是json格式对象
+
+      $("#btnOne").on("click",function(){
+        $.ajax({
+          contentType: "application/json;charset=utf-8",    // 表明后端接收的是：json格式字符串不是json格式对象
+          type: "post",
+          url: "/jsonOne",
+          data: JSON.stringify(jsonData1),    // 将json格式对象转换为json格式字符串--->传递到后端(因为：@RequestBody)
+          dataType: "json"
+        });
+      });
+
+      $("#btnTwo").on("click",function(){
+        $.ajax({
+          type:"post",
+          dataType:"json",
+          data:jsonData1,      // 发送json格式对象
+          url:"/jsonThree"
+        });
+      });
+
+      // 测试JSONObject对象接收JSON格式字符串
+      $("#btnThree").on("click",function(){
+        $.ajax({
+          contentType:"application/json;charset=utf-8",
+          type:"post",
+          dataType:"json",
+          data:JSON.stringify(jsonData1),    // 发送json格式字符串
+          url:"/jsonFour"
+        });
+      });
+
+      // 测试JSONObject对象接收JOSN格式对象(注意：JSONObject对象无法接收JSON格式对象)
+      $("#btnFour").on("click",function(){
+        $.ajax({
+          type:"post",
+          dataType:"json",
+          data:jsonData1,
+          url:"/jsonFive"    // 发送json格式对象
+        });
+      });
+    })
+  </script>
+</head>
+<body>
+  <div>
+    <h3>登陆页面</h3>
+    <form method="post">
+      用户名：<input type="text" name="username" placeholder="请输入用户名" /><br>
+      密码：<input type="password" name="password" placeholder="请输入密码" /><br>
+      年龄：<input type="number" min="0" max="100" name="age" placeholder="请输入年龄" /><br>
+      性别：<input type="text" name="gender" placeholder="请输入性别" /><br>
+      出生日期：<input type="date" name="birthday" /><br>
+      电话：<input type="tel" name="phone" /><br>
+      邮箱：<input type="email" name="email" /><br>
+      <input type="submit" value="提交" />
+    </form>
+  </div>
+  <button id="btnOne" type="button">发送json格式字符串</button>
+  <button id="btnTwo" type="button">发送json格式对象</button>
+  <button id="btnThree" type="button">测试JSONObject接收JSON字符串</button>
+  <button id="btnFour" type="button">测试JSONObject接收JSON对象</button>
+</body>
+</html>
