@@ -8,7 +8,6 @@ public class JsonApplicationTests {
 
     @Test
     public void testJson() {
-
+        
     }
-
 }
